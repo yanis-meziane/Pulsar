@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Home from "./Home/Home"
-{/*import Register from "./Register/Register"*/}
+import Register from "./Register/Register"
 import Login from "./Login/Login"
 
 // Import pour les pages Admin
@@ -9,8 +9,6 @@ import Admin from "./Admin/Admin"
 import AddStats from "./Admin/AddStats"
 import Phoenix from "./Trainings/Phoenix/Phoenix"
 import Competition from "./Competition/Competition"
-import Indoor from "./Competition/Indoor"
-import Outdoor from "./Competition/Outdoor"
 import Hat from "./Hat/Hat"
 import Tournois from "./Tournois/Tournois"
 
@@ -21,7 +19,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        {/*<Route path="/register" element={<Register />} />*/}
+        {<Route path="/register" element={<Register />} />}
 
       {/* Routes nécessaires que pour les admin */}
 
@@ -32,8 +30,6 @@ function App() {
         <Route path="/admin/addStats/Hat" element={<Hat />} />
         <Route path="/admin/addStats/Tournois" element={<Tournois />} />
         <Route path="/admin/addStats/Competition" element={<Competition />} />
-        <Route path="/admin/addStats/Competition/Indoor" element={<Indoor />} />
-        <Route path="/admin/addStats/Competition/Outdoor" element={<Outdoor />} />
         
       {/* Route pour le rajout des statistiques */}
 

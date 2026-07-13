@@ -123,6 +123,253 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+app.get('/api/clubs', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT club_id, club_name FROM clubs');
+    res.json({ success: true, clubs: result.rows });
+  } catch (error) {
+    console.error('Erreur récupération clubs:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
+app.post('/api/trainings', async (req, res) => {
+  const { userId, clubId, date, goals, assists } = req.body;
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO trainings (user_id, club_id, date, goals, assists) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [userId, clubId, date, goals, assists]
+    );
+    res.status(201).json({ success: true, training: result.rows[0] });
+  } catch (error) {
+    console.error('Erreur ajout entraînement:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
+// API Competitions (Tournois)
+
+app.post('/api/competitions', async (req, res) => {
+  const { userId, name, location, date, nb_matchs, goals, assists, wins, losses, final_ranking } = req.body;
+
+  if (!userId || !name || !date) {
+    return res.status(400).json({ success: false, message: 'Champs obligatoires manquants' });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO tournois (user_id, name, location, date, nb_matchs, goals, assists, wins, losses, final_ranking)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       RETURNING *`,
+      [userId, name, location, date, nb_matchs || 0, goals || 0, assists || 0,  wins || 0, losses || 0, final_ranking || null]
+    );
+
+    res.status(201).json({ success: true, competition: result.rows[0] });
+  } catch (error) {
+    console.error('Erreur ajout compétition:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
+// API Hat
+
+app.post('/api/hat', async (req, res) => {
+  const { userId, name, location, date, nb_matchs, goals, assists, wins, losses, final_ranking } = req.body;
+
+  if (!userId || !name || !date) {
+    return res.status(400).json({ success: false, message: 'Champs obligatoires manquants' });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO hats (user_id, name, location, date, nb_matchs, goals, assists, wins, losses, final_ranking)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       RETURNING *`,
+      [userId, name, location, date, nb_matchs || 0, goals || 0, assists || 0, wins || 0, losses || 0, final_ranking || null]
+    );
+
+    res.status(201).json({ success: true, hat: result.rows[0] });
+  } catch (error) {
+    console.error('Erreur ajout hat:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
+// API Championnat (Indoor / Outdoor selon le champ championnat_type)
+// Un seul endpoint : le type choisi dans le formulaire (Indoor/Outdoor)
+// est simplement une valeur de la colonne championnat_type.
+
+app.post('/api/championnat', async (req, res) => {
+  const {
+    userId, division, championnat_type, clubId,
+    location, date, nb_matchs, goals, assists, wins, losses, final_ranking
+  } = req.body;
+
+  if (!userId || !division || !championnat_type || !date) {
+    return res.status(400).json({ success: false, message: 'Champs obligatoires manquants (division, championnat_type, date)' });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO championnat
+         (user_id, club_id, division, championnat_type, location, date, nb_matchs, goals, assists, wins, losses, final_ranking)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+       RETURNING *`,
+      [userId, clubId || null, division, championnat_type, location, date,
+       nb_matchs || 0, goals || 0, assists || 0, wins || 0, losses || 0, final_ranking || null]
+    );
+
+    res.status(201).json({ success: true, championnat: result.rows[0] });
+  } catch (error) {
+    console.error('Erreur ajout championnat:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
+// API Stats - Entraînements
+
+app.get('/api/stats/training/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const result = await pool.query(`
+      SELECT club_name, year, nb_sessions, total_goals, moyenne_par_semaine,assists_par_semaine
+      FROM stats_training_per_club
+      WHERE user_id = $1
+    `, [userId]);
+
+    res.status(200).json({ success: true, stats: result.rows });
+  } catch (error) {
+    console.error('Erreur récupération stats entraînement:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
+// API Stats - Tournois (competitions)
+
+app.get('/api/stats/tournaments/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const result = await pool.query(`
+      SELECT name AS tournament_name, location, year AS annee,
+             nb_matchs, goals, assists, wins, losses, final_ranking
+      FROM tournois
+      WHERE user_id = $1
+      ORDER BY year DESC, name
+    `, [userId]);
+
+    res.status(200).json({ success: true, stats: result.rows });
+  } catch (error) {
+    console.error('Erreur récupération stats tournois:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
+// API Stats - Hat
+
+app.get('/api/stats/hats/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const result = await pool.query(`
+      SELECT name AS tournament_name, location, year AS annee,
+             nb_matchs, goals, assists, wins, losses, final_ranking
+      FROM hats
+      WHERE user_id = $1
+      ORDER BY year DESC, name
+    `, [userId]);
+
+    res.status(200).json({ success: true, stats: result.rows });
+  } catch (error) {
+    console.error('Erreur récupération stats hat:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
+// API Stats - Championnat (liste détaillée, filtrable par type et/ou année)
+// Ex: GET /api/stats/championnat/12?type=Indoor&year=2026
+
+app.get('/api/stats/championnat/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { type, year } = req.query;
+
+  const conditions = ['user_id = $1'];
+  const params = [userId];
+
+  if (type) {
+    params.push(type);
+    conditions.push(`championnat_type = $${params.length}`);
+  }
+  if (year) {
+    params.push(year);
+    conditions.push(`year = $${params.length}`);
+  }
+
+  try {
+    const result = await pool.query(`
+      SELECT division, championnat_type, location, year AS annee,
+             nb_matchs, goals, assists, wins, losses, final_ranking
+      FROM championnat
+      WHERE ${conditions.join(' AND ')}
+      ORDER BY year DESC, division
+    `, params);
+
+    res.status(200).json({ success: true, stats: result.rows });
+  } catch (error) {
+    console.error('Erreur récupération stats championnat:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
+// API Stats - Championnat agrégées (moyenne par type + saison)
+// Ex: GET /api/stats/championnat-summary/12?type=Indoor&year=2026
+// -> renvoie la moyenne buts/passes etc. pour ce type et cette saison uniquement
+
+app.get('/api/stats/championnat-summary/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { type, year } = req.query;
+
+  const conditions = ['user_id = $1'];
+  const params = [userId];
+
+  if (type) {
+    params.push(type);
+    conditions.push(`championnat_type = $${params.length}`);
+  }
+  if (year) {
+    params.push(year);
+    conditions.push(`year = $${params.length}`);
+  }
+
+  try {
+    const result = await pool.query(`
+      SELECT
+        championnat_type,
+        year AS annee,
+        COUNT(championnat_id)              AS nb_championnats,
+        SUM(nb_matchs)                     AS total_matchs,
+        SUM(goals)                         AS total_goals,
+        ROUND(AVG(goals), 2)               AS moyenne_goals,
+        SUM(assists)                       AS total_assists,
+        ROUND(AVG(assists), 2)             AS moyenne_assists,
+        SUM(wins)                          AS total_wins,
+        SUM(losses)                        AS total_losses,
+        ROUND(AVG(final_ranking), 2)       AS moyenne_classement
+      FROM championnat
+      WHERE ${conditions.join(' AND ')}
+      GROUP BY championnat_type, year
+      ORDER BY year DESC, championnat_type
+    `, params);
+
+    res.status(200).json({ success: true, summary: result.rows });
+  } catch (error) {
+    console.error('Erreur récupération résumé championnat:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
 });

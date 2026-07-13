@@ -1,0 +1,92 @@
+#adminContainer {
+  padding: 1.5rem;
+}
+
+.statsLayout {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.statsSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 160px;
+}
+
+.statsSidebar button {
+  padding: 0.6rem 1rem;
+  text-align: left;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.statsSidebar button:hover {
+  background: #ececec;
+}
+
+.statsSidebar button.active {
+  background: #2c3e50;
+  color: #fff;
+  border-color: #2c3e50;
+}
+
+.statsContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.statsPlaceholder {
+  color: #777;
+}
+
+.champFilters {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.champFilters label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.champSummary {
+  background: #f2f6fa;
+  border: 1px solid #d7e3ee;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.champSummary p {
+  margin: 0.2rem 0;
+}
+
+.statsContent table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.statsContent th,
+.statsContent td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.statsContent thead {
+  background: #f0f0f0;
+}
+
+.errorMessage {
+  color: #b00020;
+}

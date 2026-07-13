@@ -1,8 +1,9 @@
 import { useState } from "react";
 import "./Hat.css";
-import AddStats from "../Admin/AddStats";
+import { useNavigate } from "react-router-dom";
 
 export default function Hat() {
+    const navigate = useNavigate();
   const [formData, setFormData] = useState({
     date: '',
     name: '',
@@ -25,7 +26,7 @@ export default function Hat() {
     const userId = localStorage.getItem('userId');
 
     try {
-      const response = await fetch('http://localhost:3001/api/hat', {
+      const response = await fetch('/api/hat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, ...formData })
@@ -39,8 +40,8 @@ export default function Hat() {
       const data = await response.json();
       setMessage(data.success ? 'Hat enregistré !' : data.message);
       if (data.success) {
-        setTimeout(() => window.location.navigate(AddStats), 1000);
-      }
+        setTimeout(() => navigate('/admin/addStats'), 1000);
+        }
     } catch (err) {
       console.error(err);
       setMessage('Erreur serveur');
