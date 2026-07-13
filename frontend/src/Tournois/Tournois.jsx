@@ -1,8 +1,10 @@
 import { useState } from "react";
 import "./Tournois.css";
-import AddStats from "../Admin/AddStats";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Tournois() {
+    const navigate = useNavigate();
   const [formData, setFormData] = useState({
     date: '',
     name: '',
@@ -25,7 +27,7 @@ export default function Tournois() {
     e.preventDefault();
     const userId = localStorage.getItem('userId');
     try {
-      const response = await fetch('http://localhost:3001/api/competitions', {
+      const response = await fetch('/api/competitions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, ...formData })
@@ -36,7 +38,9 @@ export default function Tournois() {
       }
       const data = await response.json();
       setMessage(data.success ? 'Tournoi enregistré !' : data.message);
-      setTimeout(() => window.location.navigate(AddStats), 1000);
+      if (data.success) {
+        setTimeout(() => navigate('/admin/addStats'), 1000);
+        }
     } catch (err) {
       console.error(err);
       setMessage('Erreur serveur');
