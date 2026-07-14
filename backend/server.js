@@ -134,12 +134,16 @@ app.get('/api/clubs', async (req, res) => {
 });
 
 app.post('/api/trainings', async (req, res) => {
-  const { userId, clubId, date, goals, assists } = req.body;
+  const { userId, clubId, date, season, goals, assists } = req.body;
+
+  if (!userId || !clubId || !date || !season) {
+    return res.status(400).json({ success: false, message: 'Champs obligatoires manquants (date, saison, club)' });
+  }
 
   try {
     const result = await pool.query(
-      'INSERT INTO trainings (user_id, club_id, date, goals, assists) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [userId, clubId, date, goals, assists]
+      'INSERT INTO trainings (user_id, club_id, date, season, goals, assists) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [userId, clubId, date, season, goals, assists]
     );
     res.status(201).json({ success: true, training: result.rows[0] });
   } catch (error) {
@@ -234,7 +238,7 @@ app.get('/api/stats/training/:userId', async (req, res) => {
 
   try {
     const result = await pool.query(`
-      SELECT club_name, year, nb_sessions, total_goals, moyenne_par_semaine,assists_par_semaine
+      SELECT club_name, season, nb_sessions, total_goals, moyenne_par_semaine, total_assists, assists_par_semaine
       FROM stats_training_per_club
       WHERE user_id = $1
     `, [userId]);

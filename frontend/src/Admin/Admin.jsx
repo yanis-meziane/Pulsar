@@ -13,6 +13,7 @@ export default function Admin() {
   const [message, setMessage] = useState('');
 
   const [trainingStats, setTrainingStats] = useState(null);
+  const [trainingSeason, setTrainingSeason] = useState('Toutes');
   const [tournamentStats, setTournamentStats] = useState(null);
   const [hatStats, setHatStats] = useState(null);
   const [champStats, setChampStats] = useState(null);
@@ -67,6 +68,19 @@ export default function Admin() {
     fetchIfNeeded(category);
   };
 
+  // Saisons disponibles pour les entraînements, déduites des données reçues
+  const trainingSeasons = useMemo(() => {
+    if (!trainingStats) return [];
+    return [...new Set(trainingStats.map(r => r.season))].sort().reverse();
+  }, [trainingStats]);
+
+  const filteredTrainingStats = useMemo(() => {
+    if (!trainingStats) return [];
+    return trainingStats.filter(r =>
+      trainingSeason === 'Toutes' || r.season === trainingSeason
+    );
+  }, [trainingStats, trainingSeason]);
+
   // Types et saisons disponibles pour les filtres, déduits des données reçues
   const champTypes = useMemo(() => {
     if (!champStats) return [];
@@ -100,6 +114,17 @@ export default function Admin() {
       moyenneClassement: (sum('final_ranking') / n).toFixed(2),
     };
   }, [filteredChampStats]);
+
+  const trainingSummary = useMemo(() => {
+    if (filteredTrainingStats.length === 0) return null;
+    const sum = (key) => filteredTrainingStats.reduce((acc, r) => acc + Number(r[key] || 0), 0);
+    const nbSessions = sum('nb_sessions');
+    return {
+      nbSessions,
+      totalGoals: sum('total_goals'),
+      totalAssists: sum('total_assists'),
+    };
+  }, [filteredTrainingStats]);
 
   const TournamentTable = ({ data }) => (
     !data || data.length === 0 ? (
@@ -185,29 +210,52 @@ export default function Admin() {
 
     switch (activeCategory) {
       case 'Trainings':
-        return trainingStats === null || trainingStats.length === 0 ? (
-          <p>Aucune donnée disponible</p>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Club</th>
-                <th>Total goals</th>
-                <th>Moyenne / semaine</th>
-                <th>Moyenne assists / semaine</th>
-              </tr>
-            </thead>
-            <tbody>
-              {trainingStats.map((row, index) => (
-                <tr key={index}>
-                  <td>{row.club_name}</td>
-                  <td>{row.total_goals}</td>
-                  <td>{row.moyenne_par_semaine}</td>
-                  <td>{row.assists_par_semaine}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        return (
+          <>
+            <div className="champFilters">
+              <label>
+                Saison :
+                <select value={trainingSeason} onChange={e => setTrainingSeason(e.target.value)}>
+                  <option value="Toutes">Toutes</option>
+                  {trainingSeasons.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </label>
+            </div>
+
+            {trainingSummary && (
+              <div className="champSummary">
+                <p><strong>{trainingSummary.nbSessions}</strong> séance(s) au total</p>
+                <p>Total buts : <strong>{trainingSummary.totalGoals}</strong> — Total passes : <strong>{trainingSummary.totalAssists}</strong></p>
+              </div>
+            )}
+
+            {filteredTrainingStats.length === 0 ? (
+              <p>Aucune donnée pour ce filtre</p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Club</th>
+                    <th>Saison</th>
+                    <th>Total goals</th>
+                    <th>Moyenne / semaine</th>
+                    <th>Moyenne assists / semaine</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredTrainingStats.map((row, index) => (
+                    <tr key={index}>
+                      <td>{row.club_name}</td>
+                      <td>{row.season}</td>
+                      <td>{row.total_goals}</td>
+                      <td>{row.moyenne_par_semaine}</td>
+                      <td>{row.assists_par_semaine}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </>
         );
 
       case 'Tournois':
