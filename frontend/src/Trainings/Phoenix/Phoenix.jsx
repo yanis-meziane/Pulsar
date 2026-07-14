@@ -5,9 +5,16 @@ import { useNavigate } from "react-router-dom";
 export default function Phoenix() {
   const [clubId, setClubId] = useState(null);
   const [clubError, setClubError] = useState(false);
-  const [formData, setFormData] = useState({ date: '', goals: 0, assists: 0 });
+  const [formData, setFormData] = useState({ date: '', season: '', goals: 0, assists: 0 });
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+
+  // Saison sportive : du 01/09/AAAA au 31/08/(AAAA+1)
+  const computeSeason = (dateStr) => {
+    if (!dateStr) return '';
+    const [year, month] = dateStr.split('-').map(Number);
+    return month >= 9 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+  };
 
   useEffect(() => {
     fetch('/api/clubs')
@@ -29,11 +36,24 @@ export default function Phoenix() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleDateChange = (e) => {
+    const date = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      date,
+      season: computeSeason(date)
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!clubId) {
       setMessage("Impossible d'identifier le club Phœnix, réessaie dans un instant ou recharge la page.");
+      return;
+    }
+    if (!formData.season) {
+      setMessage('Date invalide, impossible de déterminer la saison.');
       return;
     }
 
@@ -72,7 +92,7 @@ export default function Phoenix() {
         <article className="phoenixArticle">
           <label>
             <span>Date : </span>
-            <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+            <input type="date" name="date" value={formData.date} onChange={handleDateChange} required />
           </label>
         </article>
 

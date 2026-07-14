@@ -13,6 +13,8 @@ import Hat from "./Hat/Hat"
 import Tournois from "./Tournois/Tournois"
 
 import './App.css'
+import ProtectedRoute from "./ProtectedRoutes"
+import Error from "./Error/Error"
 
 function App() {
   return (
@@ -20,16 +22,44 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         {<Route path="/register" element={<Register />} />}
+        <Route path="/error" element={<Error />} />
 
       {/* Routes nécessaires que pour les admin */}
 
         <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/admin/addStats" element={<AddStats />} />
-        <Route path="/admin/addStats/Trainings" element={<Phoenix />} />
-        <Route path="/admin/addStats/Hat" element={<Hat />} />
-        <Route path="/admin/addStats/Tournois" element={<Tournois />} />
-        <Route path="/admin/addStats/Competition" element={<Competition />} />
+
+        <Route path="/admin" element={
+          <ProtectedRoute requiredRole="admin">
+             <Admin />
+          </ProtectedRoute> 
+          }/>
+
+        <Route path="/admin/addStats" element={
+          <ProtectedRoute requiredRole="admin">
+            <AddStats />
+          </ProtectedRoute>
+          } />
+        <Route path="/admin/addStats/Trainings" element={
+          <ProtectedRoute requiredRole="admin">
+            <Phoenix />
+          </ProtectedRoute>
+          } />
+        <Route path="/admin/addStats/Hat" element={
+          <ProtectedRoute requiredRole="admin">
+            <Hat />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/addStats/Tournois" element={
+          <ProtectedRoute requiredRole="admin">
+            <Tournois />
+          </ProtectedRoute>
+         } />
+
+        <Route path="/admin/addStats/Competition" element={
+          <ProtectedRoute requiredRole="admin">
+              <Competition />
+          </ProtectedRoute>
+        } />
         
       {/* Route pour le rajout des statistiques */}
 
