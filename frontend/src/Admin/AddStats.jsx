@@ -1,17 +1,30 @@
-// Page de transition qui va servir pour rajouter les stats 
+// Page de transition qui va servir pour rajouter les stats
 
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+import "./AddStats.css";
 
-export default function AddStats(){
+export default function AddStats() {
     const navigate = useNavigate();
-    return(
-        <div>
-            <h1>Bonjour je suis la page de transition et de rajout de stats</h1>
+    return (
+        <div className="addStatsContainer">
+            <span className="addStatsContainer__eyebrow">Pulsar — Administration</span>
+            <h1>Ajouter des statistiques</h1>
+            <p className="addStatsSubtitle">Choisissez une catégorie pour enregistrer de nouveaux résultats.</p>
 
-            <button onClick={() => navigate("/admin/addStats/Trainings")}> Entraînement Phoenix</button>
-            <button onClick={() => navigate("/admin/addStats/Hat")}>Hat</button>
-            <button onClick={() => navigate("/admin/addStats/Tournois")}>Tournois</button>
-            <button onClick={() => navigate("/admin/addStats/Competition")}>Competition</button>
+            <div className="addStatsGrid">
+                <button onClick={() => navigate("/admin/addStats/Trainings")} type="button">
+                    Entraînement Phœnix
+                </button>
+                <button onClick={() => navigate("/admin/addStats/Hat")} type="button">
+                    Hat
+                </button>
+                <button onClick={() => navigate("/admin/addStats/Tournois")} type="button">
+                    Tournois
+                </button>
+                <button onClick={() => navigate("/admin/addStats/Competition")} type="button">
+                    Compétition
+                </button>
+            </div>
         </div>
-    )
+    );
 }
