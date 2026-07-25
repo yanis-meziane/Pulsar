@@ -303,8 +303,15 @@ export default function Admin() {
 
   return (
     <div id="adminContainer">
-      <h1>Coucou, je suis la page Admin</h1>
-      <button onClick={() => navigate("/admin/addStats")}>Rajouter des stats</button>
+      <header className="adminHeader">
+        <div className="adminHeader__titles">
+          <span className="adminHeader__eyebrow">Espace administrateur</span>
+          <h1 className="adminHeader__title">Pulsar</h1>
+        </div>
+        <button className="tc-pill-btn" onClick={() => navigate("/admin/addStats")} type="button">
+          Rajouter des stats
+        </button>
+      </header>
 
       <div className="statsLayout">
         <aside className="statsSidebar">

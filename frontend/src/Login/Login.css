@@ -1,0 +1,230 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --color-ink: #1a0e08;
+  --color-ink-soft: #4a382c;
+  --color-parchment: #f4ecd8;
+  --color-surface: #fffbf3;
+  --color-clay: #b33a0e;
+  --color-clay-dark: #8f2e0a;
+  --color-saffron: #f2c545;
+  --color-line: rgba(26, 14, 8, 0.12);
+  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(26, 14, 8, 0.04), 0 8px 24px rgba(26, 14, 8, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+/* ---------- Page shell ---------- */
+
+#containerLogin {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+/* ---------- Wordmark ---------- */
+
+.loginBrand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font: inherit;
+}
+
+.loginBrand__mark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 2rem;
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
+}
+
+.loginBrand__pulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-clay);
+  flex-shrink: 0;
+}
+
+.loginBrand__pulse::before,
+.loginBrand__pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-clay);
+  animation: loginPulseRing 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  opacity: 0;
+}
+
+.loginBrand__pulse::after {
+  animation-delay: 1.2s;
+}
+
+@keyframes loginPulseRing {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(3.4);
+    opacity: 0;
+  }
+}
+
+.loginBrand__eyebrow {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loginBrand__pulse::before,
+  .loginBrand__pulse::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ---------- Card / form ---------- */
+
+#formLogin {
+  width: 100%;
+  max-width: 380px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+#formLogin h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.4rem;
+  text-align: center;
+  margin: 0 0 0.25rem;
+  color: var(--color-ink);
+}
+
+#formLogin .formSubtitle {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+  margin: -0.6rem 0 0.4rem;
+}
+
+.input-span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.input-span label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+
+.input-span input {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-line);
+  background: #fff;
+  color: var(--color-ink);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.input-span input::placeholder {
+  color: rgba(26, 14, 8, 0.35);
+}
+
+.input-span input:focus {
+  outline: none;
+  border-color: var(--color-clay);
+  box-shadow: 0 0 0 3px rgba(179, 58, 14, 0.12);
+}
+
+.formMessage {
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.formMessage--error {
+  color: var(--color-clay-dark);
+  background: rgba(179, 58, 14, 0.08);
+  border: 1px solid rgba(179, 58, 14, 0.25);
+}
+
+.formMessage--success {
+  color: #1f6d3a;
+  background: rgba(31, 109, 58, 0.08);
+  border: 1px solid rgba(31, 109, 58, 0.25);
+}
+
+.submit {
+  margin-top: 0.4rem;
+  height: 46px;
+  border: 1.5px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-parchment);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition:
+    background 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-color 180ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 140ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.submit:hover {
+  background: var(--color-clay);
+  border-color: var(--color-clay);
+}
+
+.submit:active {
+  transform: translateY(1px);
+}
+
+.submit:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-saffron);
+}

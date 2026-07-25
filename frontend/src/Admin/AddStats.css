@@ -1,0 +1,99 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --color-ink: #1a0e08;
+  --color-ink-soft: #4a382c;
+  --color-parchment: #f4ecd8;
+  --color-surface: #fffbf3;
+  --color-clay: #b33a0e;
+  --color-clay-dark: #8f2e0a;
+  --color-saffron: #f2c545;
+  --color-line: rgba(26, 14, 8, 0.12);
+  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(26, 14, 8, 0.04), 0 8px 24px rgba(26, 14, 8, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+.addStatsContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.addStatsContainer__eyebrow {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.addStatsContainer h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.9rem;
+  color: var(--color-ink);
+  margin: 0 0 0.5rem;
+}
+
+.addStatsContainer p.addStatsSubtitle {
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+  margin: 0 0 2rem;
+}
+
+.addStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(160px, 220px));
+  gap: 1rem;
+}
+
+.addStatsGrid button {
+  height: 96px;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: background 160ms ease, border-color 160ms ease, transform 140ms ease;
+}
+
+.addStatsGrid button:hover {
+  background: var(--color-ink);
+  color: var(--color-parchment);
+  border-color: var(--color-ink);
+  transform: translateY(-2px);
+}
+
+.addStatsGrid button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-saffron);
+}
+
+@media (max-width: 480px) {
+  .addStatsGrid {
+    grid-template-columns: 1fr;
+  }
+}

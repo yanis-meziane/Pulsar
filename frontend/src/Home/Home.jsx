@@ -1,8 +1,114 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 const CATEGORIES = ["Trainings", "Tournois", "Hat", "Championnat"];
+
+// Photos du carrousel : renseignez `src` (chemin/URL de la photo) et `alt`.
+// Tant que `src` est vide, un visuel de remplacement s'affiche automatiquement,
+// donc vous pouvez brancher vos vraies photos une à une sans rien casser d'autre.
+const CAROUSEL_PHOTOS = [
+  { src: "", alt: "Photo du club", caption: "Saison 2025 – 2026" },
+  { src: "", alt: "Photo d'entraînement", caption: "Entraînements du mardi" },
+  { src: "", alt: "Photo de tournoi", caption: "Derniers tournois" },
+];
+
+const AUTOPLAY_DELAY = 5000;
+
+function Carousel({ photos }) {
+  const [index, setIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const timerRef = useRef(null);
+
+  const goTo = useCallback(
+    (i) => {
+      setIndex((i + photos.length) % photos.length);
+    },
+    [photos.length]
+  );
+
+  const next = useCallback(() => goTo(index + 1), [goTo, index]);
+  const prev = useCallback(() => goTo(index - 1), [goTo, index]);
+
+  useEffect(() => {
+    if (isPaused || photos.length <= 1) return undefined;
+    timerRef.current = setInterval(() => {
+      setIndex((i) => (i + 1) % photos.length);
+    }, AUTOPLAY_DELAY);
+    return () => clearInterval(timerRef.current);
+  }, [isPaused, photos.length]);
+
+  if (!photos || photos.length === 0) return null;
+
+  return (
+    <div
+      className="carousel"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div className="carousel__frame">
+        {photos.map((photo, i) => (
+          <div
+            key={i}
+            className={`carousel__slide${i === index ? " isActive" : ""}`}
+            aria-hidden={i !== index}
+          >
+            {photo.src ? (
+              <img src={photo.src} alt={photo.alt || ""} />
+            ) : (
+              <div className="carousel__placeholder">
+                <svg viewBox="0 0 256 256" aria-hidden="true">
+                  <path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.44l13.62,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z" />
+                </svg>
+                <span>{photo.alt || "Photo à venir"}</span>
+              </div>
+            )}
+            {photo.caption && <div className="carousel__caption">{photo.caption}</div>}
+          </div>
+        ))}
+
+        {photos.length > 1 && (
+          <>
+            <button
+              type="button"
+              className="carousel__arrow carousel__arrow--prev"
+              onClick={prev}
+              aria-label="Photo précédente"
+            >
+              <svg viewBox="0 0 256 256" aria-hidden="true">
+                <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="carousel__arrow carousel__arrow--next"
+              onClick={next}
+              aria-label="Photo suivante"
+            >
+              <svg viewBox="0 0 256 256" aria-hidden="true">
+                <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z" />
+              </svg>
+            </button>
+          </>
+        )}
+      </div>
+
+      {photos.length > 1 && (
+        <div className="carousel__dots">
+          {photos.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`carousel__dot${i === index ? " isActive" : ""}`}
+              onClick={() => goTo(i)}
+              aria-label={`Aller à la photo ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Home() {
   const navigate = useNavigate();
@@ -20,7 +126,7 @@ export default function Home() {
 
   const [champType, setChampType] = useState('Tous');
   const [champYear, setChampYear] = useState('Toutes');
-  
+
   const fetchIfNeeded = async (category) => {
     setMessage('');
     try {
@@ -229,7 +335,7 @@ export default function Home() {
             {filteredTrainingStats.length === 0 ? (
               <p>Aucune donnée pour ce filtre</p>
             ) : (
-              <table>
+              <table className="tableInformation">
                 <thead>
                   <tr>
                     <th>Club</th>
@@ -298,31 +404,51 @@ export default function Home() {
     }
   };
 
-
   return (
-    <div>
-      <h1>Coucou, je suis la page user classique</h1>
+    <div id="mainHome">
+      <div className="topBar">
+        <button onClick={() => navigate("/login")} className="tc-pill-btn" type="button">
+          Se connecter
+          <svg className="tc-pill-btn__icon" viewBox="0 0 256 256" aria-hidden="true">
+            <path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z" />
+          </svg>
+        </button>
+        {/*<button onClick={() => navigate("/register")}>S'inscrire</button>*/}
+      </div>
 
-      <button onClick={() => navigate("/login")}>Se connecter</button>
-      <button onClick={() => navigate("/register")}>S'inscrire</button>
+      <header className="brandHeader">
+        <span className="brandHeader__eyebrow">Statistiques de club</span>
+        <div className="brandHeader__mark">
+          <span className="brandHeader__rule" />
+          <h1 className="brandHeader__title">
+            Pulsar
+            <span className="brandHeader__pulse" aria-hidden="true" />
+          </h1>
+          <span className="brandHeader__rule" />
+        </div>
+      </header>
 
-      <div className="statsLayout">
-        <aside className="statsSidebar">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              className={activeCategory === cat ? 'active' : ''}
-              onClick={() => handleCategoryClick(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </aside>
+      <Carousel photos={CAROUSEL_PHOTOS} />
 
-        <section className="statsContent">
-          {message && <p className="errorMessage">{message}</p>}
-          {renderContent()}
-        </section>
+      <div id="HomeContainer">
+        <div className="statsLayout">
+          <aside className="statsSidebar">
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                className={activeCategory === cat ? 'active' : ''}
+                onClick={() => handleCategoryClick(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </aside>
+
+          <section className="statsContent">
+            {message && <p className="errorMessage">{message}</p>}
+            {renderContent()}
+          </section>
+        </div>
       </div>
     </div>
   );

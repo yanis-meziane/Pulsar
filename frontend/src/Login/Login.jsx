@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import "./Login.css"
+import "./Login.css";
 
 export default function Login() {
     const [formData, setFormData] = useState({
@@ -39,9 +39,9 @@ export default function Login() {
                 localStorage.setItem("type", data.type.trim());
                 localStorage.setItem("userId", data.userId);
                 localStorage.setItem("firstname", data.firstname);
-                
+
                 setSuccess('Connexion réussie !');
-                
+
                 setTimeout(() => {
                     if (data.type === "admin") {
                         navigate('/admin');
@@ -57,30 +57,57 @@ export default function Login() {
             setError('Erreur de connexion au serveur');
         }
     };
-    
-return(
+
+    return (
         <div id="containerLogin">
+            <button
+                type="button"
+                className="loginBrand"
+                onClick={() => navigate("/")}
+                aria-label="Retour à l'accueil Pulsar"
+            >
+                <span className="loginBrand__eyebrow">Statistiques de club</span>
+                <span className="loginBrand__mark">
+                    Pulsar
+                    <span className="loginBrand__pulse" aria-hidden="true" />
+                </span>
+            </button>
+
             <form onSubmit={handleSubmit} id="formLogin">
+                <h2>Connexion</h2>
+                <span className="input-span">
+                    <label htmlFor="mail">Mail</label>
+                    <input
+                        type="email"
+                        name="mail"
+                        id="mail"
+                        placeholder="Votre mail..."
+                        minLength={1}
+                        maxLength={30}
+                        value={formData.mail}
+                        onChange={handleChange}
+                        required
+                    />
+                </span>
 
                 <span className="input-span">
-                    <label htmlFor="mail"> Mail : </label>
-                    <input type="email" name="mail" id="emailLogin" placeholder="Votre mail..." minLength={1} maxLength={30} value={formData.mail} onChange={handleChange} required />
+                    <label htmlFor="mdp">Mot de passe</label>
+                    <input
+                        type="password"
+                        name="mdp"
+                        id="mdp"
+                        placeholder="Votre mot de passe..."
+                        value={formData.mdp}
+                        onChange={handleChange}
+                        required
+                    />
                 </span>
-            <br />
-            <br />
 
-            <span className="input-span">
-                <label htmlFor="mdp">Mot de passe : </label>
-                <input type="password" name="mdp" id="mdp" placeholder="Votre mot de passe..." value={formData.mdp} onChange={handleChange} required />
-            </span>
-                <br />
-                <br />
+                {error && <p className="formMessage formMessage--error">{error}</p>}
+                {success && <p className="formMessage formMessage--success">{success}</p>}
 
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                {success && <p style={{ color: 'green' }}>{success}</p>}
-
-                <input className="submit" type="submit" defaultValue="Valider" />
+                <input className="submit" type="submit" value="Valider" />
             </form>
         </div>
-    )
+    );
 }
