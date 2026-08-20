@@ -8,9 +8,21 @@ const CATEGORIES = ["Trainings", "Tournois", "Hat", "Championnat"];
 // Tant que `src` est vide, un visuel de remplacement s'affiche automatiquement,
 // donc vous pouvez brancher vos vraies photos une à une sans rien casser d'autre.
 const CAROUSEL_PHOTOS = [
-  { src: "", alt: "Photo du club", caption: "Saison 2025 – 2026" },
-  { src: "", alt: "Photo d'entraînement", caption: "Entraînements du mardi" },
-  { src: "", alt: "Photo de tournoi", caption: "Derniers tournois" },
+  {
+    src: "../public/Championnat.jpeg",
+    alt: "Photo du club",
+    caption: "Saison 2025 – 2026",
+  },
+  {
+    src: "../public/Lutece.jpeg",
+    alt: "Photo d'entraînement",
+    caption: "Entraînements"
+  },
+  {
+    src: "../public/SummerLove.jpeg",
+    alt: "Photo de tournoi",
+    caption: "Derniers tournois"
+  },
 ];
 
 const AUTOPLAY_DELAY = 5000;
