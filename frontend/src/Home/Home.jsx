@@ -4,30 +4,30 @@ import "./Home.css";
 
 const CATEGORIES = ["Trainings", "Tournois", "Hat", "Championnat"];
 
-// Photos du carrousel : renseignez `src` (chemin/URL de la photo) et `alt`.
-// Tant que `src` est vide, un visuel de remplacement s'affiche automatiquement,
-// donc vous pouvez brancher vos vraies photos une à une sans rien casser d'autre.
 const CAROUSEL_PHOTOS = [
   {
     src: "../public/Championnat.jpeg",
     alt: "Photo du club",
     caption: "Saison 2025 – 2026",
+    driveUrl: "https://drive.google.com/drive/folders/1B56btMdINSfpn-ZMykXfvxC1dFwtLdIj",
   },
   {
     src: "../public/Lutece.jpeg",
     alt: "Photo d'entraînement",
-    caption: "Entraînements"
+    caption: "Entraînements",
+    driveUrl: "https://drive.google.com/drive/folders/1pH-mdALOFogiwh-a20aEuAume4F9l5L2",
   },
   {
     src: "../public/SummerLove.jpeg",
     alt: "Photo de tournoi",
-    caption: "Derniers tournois"
+    caption: "Derniers tournois",
+    driveUrl: "https://drive.google.com/drive/folders/1fsJWgzh4XZfLfR4oXKg8iDLRmA34xYXH",
   },
 ];
 
 const AUTOPLAY_DELAY = 5000;
 
-function Carousel({ photos }) {
+function Carousel({ photos, onPhotoClick }) {
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef(null);
@@ -64,6 +64,16 @@ function Carousel({ photos }) {
             key={i}
             className={`carousel__slide${i === index ? " isActive" : ""}`}
             aria-hidden={i !== index}
+            role={photo.driveUrl ? "button" : undefined}
+            tabIndex={photo.driveUrl && i === index ? 0 : -1}
+            onClick={() => photo.driveUrl && onPhotoClick && onPhotoClick(photo, i)}
+            onKeyDown={(e) => {
+              if (photo.driveUrl && (e.key === "Enter" || e.key === " ") && onPhotoClick) {
+                e.preventDefault();
+                onPhotoClick(photo, i);
+              }
+            }}
+            style={{ cursor: photo.driveUrl ? "pointer" : undefined }}
           >
             {photo.src ? (
               <img src={photo.src} alt={photo.alt || ""} />
@@ -440,7 +450,14 @@ export default function Home() {
         </div>
       </header>
 
-      <Carousel photos={CAROUSEL_PHOTOS} />
+      <Carousel
+        photos={CAROUSEL_PHOTOS}
+        onPhotoClick={(photo) => {
+          if (photo.driveUrl) {
+            window.open(photo.driveUrl, "_blank", "noopener,noreferrer");
+          }
+        }}
+      />
 
       <div id="HomeContainer">
         <div className="statsLayout">
