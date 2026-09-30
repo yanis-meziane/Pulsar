@@ -110,9 +110,9 @@ export default function Phoenix() {
           </label>
         </article>
 
-        <article className="phoenixArticle">
-          <input id="submit" type="submit" defaultValue="Valider" disabled={!clubId} />
-        </article>
+       <article className="phoenixArticle">
+          <input id="submit" type="submit" value="Valider" disabled={!clubId} onClick={() => setTimeout(() => navigate('/admin/addStats'), 1000)}/>
+      </article>
       </form>
 
       {clubError && <p>Le club Phœnix n'a pas été trouvé — vérifie le nom exact en base.</p>}
