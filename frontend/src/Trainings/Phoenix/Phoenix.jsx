@@ -111,7 +111,7 @@ export default function Phoenix() {
         </article>
 
        <article className="phoenixArticle">
-          <input id="submit" type="submit" value="Valider" disabled={!clubId} onClick={() => setTimeout(() => navigate('/admin/addStats'), 1000)}/>
+          <input id="submit" type="submit" value="Valider" disabled={!clubId} onClick={() => setTimeout(() => navigate('/admin'), 1000)}/>
       </article>
       </form>
 
