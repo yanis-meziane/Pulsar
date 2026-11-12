@@ -28,21 +28,21 @@ export default function Admin() {
     try {
       if (category === 'Trainings' && trainingStats === null) {
         setLoading(true);
-        const res = await fetch(`http://localhost:3001/api/stats/training/${userId}`);
+        const res = await fetch(`/api/stats/training/${userId}`);
         const data = await res.json();
         setTrainingStats(data.success ? data.stats : []);
         if (!data.success) setMessage('Erreur lors du chargement des stats entraînement');
       }
       if (category === 'Tournois' && tournamentStats === null) {
         setLoading(true);
-        const res = await fetch(`http://localhost:3001/api/stats/tournaments/${userId}`);
+        const res = await fetch(`/api/stats/tournaments/${userId}`);
         const data = await res.json();
         setTournamentStats(data.success ? data.stats : []);
         if (!data.success) setMessage('Erreur lors du chargement des stats tournois');
       }
       if (category === 'Hat' && hatStats === null) {
         setLoading(true);
-        const res = await fetch(`http://localhost:3001/api/stats/hats/${userId}`);
+        const res = await fetch(`/api/stats/hats/${userId}`);
         const data = await res.json();
         setHatStats(data.success ? data.stats : []);
         if (!data.success) setMessage('Erreur lors du chargement des stats hat');
@@ -51,7 +51,7 @@ export default function Admin() {
         setLoading(true);
         // On charge tout le championnat une seule fois, puis on filtre
         // côté client (type + saison) pour un rendu instantané.
-        const res = await fetch(`http://localhost:3001/api/stats/championnat/${userId}`);
+        const res = await fetch(`/api/stats/championnat/${userId}`);
         const data = await res.json();
         setChampStats(data.success ? data.stats : []);
         if (!data.success) setMessage('Erreur lors du chargement des stats championnat');

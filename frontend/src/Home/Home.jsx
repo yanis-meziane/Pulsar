@@ -6,19 +6,19 @@ const CATEGORIES = ["Trainings", "Tournois", "Hat", "Championnat"];
 
 const CAROUSEL_PHOTOS = [
   {
-    src: "../public/Championnat.jpeg",
+    src: "Championnat.jpeg",
     alt: "Photo du club",
     caption: "Saison 2025 – 2026",
     driveUrl: "https://drive.google.com/drive/folders/1B56btMdINSfpn-ZMykXfvxC1dFwtLdIj",
   },
   {
-    src: "../public/Lutece.jpeg",
+    src: "Lutece.jpeg",
     alt: "Photo d'entraînement",
     caption: "Entraînements",
     driveUrl: "https://drive.google.com/drive/folders/1pH-mdALOFogiwh-a20aEuAume4F9l5L2",
   },
   {
-    src: "../public/SummerLove.jpeg",
+    src: "SummerLove.jpeg",
     alt: "Photo de tournoi",
     caption: "Derniers tournois",
     driveUrl: "https://drive.google.com/drive/folders/1fsJWgzh4XZfLfR4oXKg8iDLRmA34xYXH",
@@ -154,21 +154,21 @@ export default function Home() {
     try {
       if (category === 'Trainings' && trainingStats === null) {
         setLoading(true);
-        const res = await fetch(`http://localhost:3001/api/stats/training/${userId}`);
+        const res = await fetch(`/api/stats/training/${userId}`);
         const data = await res.json();
         setTrainingStats(data.success ? data.stats : []);
         if (!data.success) setMessage('Erreur lors du chargement des stats entraînement');
       }
       if (category === 'Tournois' && tournamentStats === null) {
         setLoading(true);
-        const res = await fetch(`http://localhost:3001/api/stats/tournaments/${userId}`);
+        const res = await fetch(`/api/stats/tournaments/${userId}`);
         const data = await res.json();
         setTournamentStats(data.success ? data.stats : []);
         if (!data.success) setMessage('Erreur lors du chargement des stats tournois');
       }
       if (category === 'Hat' && hatStats === null) {
         setLoading(true);
-        const res = await fetch(`http://localhost:3001/api/stats/hats/${userId}`);
+        const res = await fetch(`/api/stats/hats/${userId}`);
         const data = await res.json();
         setHatStats(data.success ? data.stats : []);
         if (!data.success) setMessage('Erreur lors du chargement des stats hat');
@@ -177,7 +177,7 @@ export default function Home() {
         setLoading(true);
         // On charge tout le championnat une seule fois, puis on filtre
         // côté client (type + saison) pour un rendu instantané.
-        const res = await fetch(`http://localhost:3001/api/stats/championnat/${userId}`);
+        const res = await fetch(`/api/stats/championnat/${userId}`);
         const data = await res.json();
         setChampStats(data.success ? data.stats : []);
         if (!data.success) setMessage('Erreur lors du chargement des stats championnat');
