@@ -5,17 +5,32 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const app = express();
-const PORT = 3001;
+
+// AlwaysData fournit PORT et IP via des variables d'environnement
+const PORT = process.env.PORT || 3001;
+const HOST = process.env.IP || '0.0.0.0';
+
+// Origines autorisées : le front en prod (FRONTEND_URL) + le dev local
+const allowedOrigins = [
+  process.env.FRONTEND_URL,       // ex: https://ton-site.alwaysdata.net (sans slash final)
+  'http://localhost:5173'
+].filter(Boolean);
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Autorise aussi les requêtes sans origine (Postman, curl, même domaine)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Origine non autorisée par CORS'));
+  },
   credentials: true
 }));
 
 app.use(express.json());
 
 const pool = new Pool({
-  user: process.env.DB_USER,       
+  user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
@@ -44,7 +59,8 @@ const checkAdminRole = async (req, res, next) => {
     if (userCheck.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'Utilisateur non trouvé.' });
     }
-    if (userCheck.rows[0].role.trim() !== 'admin') {
+    // Correction : la colonne s'appelle user_role (et non role)
+    if (userCheck.rows[0].user_role.trim() !== 'admin') {
       return res.status(403).json({ success: false, message: 'Accès refusé' });
     }
     next();
@@ -113,7 +129,7 @@ app.post('/api/login', async (req, res) => {
     return res.status(200).json({
       success: true,
       type: user.user_role,
-      userId: user.user_id, 
+      userId: user.user_id,
       firstname: user.firstname
     });
 
@@ -166,7 +182,7 @@ app.post('/api/competitions', async (req, res) => {
       `INSERT INTO tournois (user_id, name, location, date, nb_matchs, goals, assists, wins, losses, final_ranking)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING *`,
-      [userId, name, location, date, nb_matchs || 0, goals || 0, assists || 0,  wins || 0, losses || 0, final_ranking || null]
+      [userId, name, location, date, nb_matchs || 0, goals || 0, assists || 0, wins || 0, losses || 0, final_ranking || null]
     );
 
     res.status(201).json({ success: true, competition: result.rows[0] });
@@ -374,6 +390,6 @@ app.get('/api/stats/championnat-summary/:userId', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Serveur démarré sur ${HOST}:${PORT}`);
 });
