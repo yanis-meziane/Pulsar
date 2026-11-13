@@ -27,4 +27,8 @@ dist-ssr
 # Backend 
 
 backend/db 
-backend/.env
+backend/.env 
+
+# Frontend 
+
+frontend/.env.production

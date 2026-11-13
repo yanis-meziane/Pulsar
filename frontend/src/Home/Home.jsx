@@ -134,7 +134,7 @@ function Carousel({ photos, onPhotoClick }) {
 
 export default function Home() {
   const navigate = useNavigate();
-  const userId = localStorage.getItem('userId');
+  const userId = localStorage.getItem('userId') || import.meta.env.VITE_PUBLIC_USER_ID;
 
   const [activeCategory, setActiveCategory] = useState(null);
   const [loading, setLoading] = useState(false);
